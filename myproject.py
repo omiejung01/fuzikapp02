@@ -4,17 +4,18 @@ from app1 import file
 
 app = Flask(__name__)
 
+@app.route('/success/<name>')
+def success(name):
+	return 'welcome %s' % name
 
-@app.route("/")
-def hello():
-    return "<h1 style='color:blue'>Hello There! General Kenobi</h1>"
+@app.route('/login',methods = ['POST', 'GET'])
+def login():
+	if request.method == 'POST':
+		user = request.form['nm']
+		return redirect(url_for('success',name = user))
+	else:
+		user = request.args.get('nm')
+		return redirect(url_for('success',name = user))
 
-@app.route("/app1")
-def app1():
-	return file.hello()
-
-
-if __name__ == "__main__":
-	app.debug = True
-	app.run(host='0.0.0.0')
-
+if __name__ == '__main__':
+	app.run(debug = True)
