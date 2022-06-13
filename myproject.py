@@ -1,6 +1,10 @@
 from flask import Flask
 from app1 import file
 
+import logging
+
+logging.basicConfig(filename='example.log', encoding='utf-8', level=logging.DEBUG)
+
 
 app = Flask(__name__)
 
