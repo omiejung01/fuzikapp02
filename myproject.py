@@ -1,20 +1,29 @@
 from flask import Flask
-from app1 import file
 
-app = Flask(__name__)
+def create_app(test_config=None):
+    # create and configure the app
+    app = Flask(__name__, instance_relative_config=True)
+    app.config.from_mapping(
+        SECRET_KEY='dev',
+        DATABASE=os.path.join(app.instance_path, 'flaskr.sqlite'),
+    )
 
-@app.route('/success/<name>')
-def success(name):
-	return 'welcome %s' % name
+    if test_config is None:
+        # load the instance config, if it exists, when not testing
+        app.config.from_pyfile('config.py', silent=True)
+    else:
+        # load the test config if passed in
+        app.config.from_mapping(test_config)
 
-@app.route('/login',methods = ['POST', 'GET'])
-def login():
-	if request.method == 'POST':
-		user = request.form['nm']
-		return redirect(url_for('success',name = user))
-	else:
-		user = request.args.get('nm')
-		return redirect(url_for('success',name = user))
+    # ensure the instance folder exists
+    try:
+        os.makedirs(app.instance_path)
+    except OSError:
+        pass
 
-if __name__ == '__main__':
-	app.run(debug = True)
+    # a simple page that says hello
+    @app.route('/hello')
+    def hello():
+        return 'Hello, World!'
+
+    return app
